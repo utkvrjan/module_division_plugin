@@ -32,3 +32,8 @@ Refer to our [contribution guidelines](https://github.com/jenkinsci/.github/blob
 
 Licensed under MIT, see [LICENSE](LICENSE.md)
 
+
+
+# module_division_plugin
+java模块划分jenkins插件
+>>>>>>> 51335e9dd2fb0900c89e16ef3d24a3a19c5a9630
