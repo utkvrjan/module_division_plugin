@@ -1,6 +1,9 @@
 package io.jenkins.plugins.sample.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import hudson.model.TaskListener;
+import io.jenkins.plugins.sample.model.Folder;
+import io.jenkins.plugins.sample.service.impl.FileServiceImpl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -8,10 +11,16 @@ import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.io.IOException;
 
 public class GitUtils {
+
+
+    private static FileServiceImpl fileService = new FileServiceImpl();
+
     private static String localPath;
     private static Git git;
     private static TaskListener listener;
@@ -58,13 +67,16 @@ public class GitUtils {
 
     }
 
-    private static void fetchSrc() {
+    private static void fetchSrc() throws IOException {
         Repository repository = git.getRepository();
         File directory =repository.getWorkTree();
         listener.getLogger().println("directory拿到了");
         File[] files = directory.listFiles();
         for(File file : files) {
             if(file.getName().equals("src")) {
+                Folder res = fileService.traverseFolder(file);
+                String jsonString = JSONObject.toJSONString(res);
+                listener.getLogger().println("模块划分结果："+jsonString);
                 returnDir(file, 0); // 调用遍历方法
                 break;
             }
