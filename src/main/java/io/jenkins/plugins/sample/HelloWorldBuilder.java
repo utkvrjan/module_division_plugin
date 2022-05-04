@@ -9,11 +9,15 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.Builder;
 import hudson.tasks.BuildStepDescriptor;
+import io.jenkins.plugins.sample.utils.GitUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.servlet.ServletException;
+import java.io.File;
 import java.io.IOException;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
@@ -24,13 +28,28 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
     private final String gitURL;
     private boolean useFrench;
     private  String classNameCheckList;
+    private final String gitBranch;
+    private final String projectName;
+
 
     @DataBoundConstructor
-    public HelloWorldBuilder(String gitURL) {
+    public HelloWorldBuilder(String gitURL, String gitBranch, String projectName) {
         this.gitURL = gitURL;
+        this.gitBranch = gitBranch;
+        this.projectName = projectName;
     }
 
+    public String getClassNameCheckList() {
+        return classNameCheckList;
+    }
 
+    public String getGitBranch() {
+        return gitBranch;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
 
     public String getGitURL() {
         return gitURL;
@@ -57,11 +76,13 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
         if(!StringUtils.isBlank(classNameCheckList)) {
             listener.getLogger().println("当前限制的类名有：" + classNameCheckList + "!");
         }
+        GitUtils.cloneResposity(gitURL,gitBranch,projectName,listener);
     }
 
     @Symbol("greet")
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
+        private String gitURL;
 
         public FormValidation doCheckGitURL(@QueryParameter String value, @QueryParameter boolean useFrench)
                 throws IOException, ServletException {
@@ -69,6 +90,22 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
                 return FormValidation.error(Messages.HelloWorldBuilder_DescriptorImpl_errors_missingName());
             if (!value.endsWith(".git"))
                 return FormValidation.error(Messages.HelloWorldBuilder_DescriptorImpl_errors_misaddress());
+            gitURL = value;
+            return FormValidation.ok();
+        }
+        public FormValidation doCheckGitBranch(@QueryParameter String value, @QueryParameter boolean useFrench)
+                throws IOException, ServletException {
+            if (value.length() == 0)
+                return FormValidation.error(Messages.HelloWorldBuilder_DescriptorImpl_errors_missingName());
+            return FormValidation.ok();
+        }
+        public FormValidation doCheckProjectName(@QueryParameter String value, @QueryParameter boolean useFrench)
+                throws IOException, ServletException {
+            if (value.length() == 0)
+                return FormValidation.error(Messages.HelloWorldBuilder_DescriptorImpl_errors_missingName());
+            String str = "/"+value+".git";
+            if (!gitURL.endsWith(str))
+                return FormValidation.error(Messages.HelloWorldBuilder_DescriptorImpl_errors_inconformity());
             return FormValidation.ok();
         }
         public FormValidation doCheckClassNameCheckList(@QueryParameter String classNameCheckList)

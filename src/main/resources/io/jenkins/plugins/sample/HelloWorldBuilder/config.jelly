@@ -1,6 +1,12 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <f:entry title="${%Name}" field="gitURL">
+    <f:entry title="${%gitURL}" field="gitURL">
+        <f:textbox />
+    </f:entry>
+    <f:entry title="${%gitBranch}" field="gitBranch">
+        <f:textbox />
+    </f:entry>
+    <f:entry title="${%projectName}" field="projectName">
         <f:textbox />
     </f:entry>
     <f:advanced>
