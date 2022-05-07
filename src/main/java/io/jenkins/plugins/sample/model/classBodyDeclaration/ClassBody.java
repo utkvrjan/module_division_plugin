@@ -46,6 +46,7 @@ public class ClassBody {
         }
         if(member instanceof ConstructorDeclaration) {
             ConstructorDeclaration constructorDeclaration = (ConstructorDeclaration) member;
+            if(this.getConstructorList() == null) this.setConstructorList(new ArrayList<>());
             if(constructorDeclaration != null) {
                 this.getConstructorList().add(constructorDeclaration);
             }
@@ -53,7 +54,10 @@ public class ClassBody {
         }
         if(member instanceof ClassDeclaration) {
             ClassDeclaration classDeclaration = (ClassDeclaration) member;
-            this.getInnerClassList().add(classDeclaration);
+            if(this.getInnerClassList() == null) this.setInnerClassList(new ArrayList<>());
+            if(classDeclaration != null) {
+                this.getInnerClassList().add(classDeclaration);
+            }
             return true;
         }
         return false;
