@@ -19,17 +19,26 @@ import java.io.IOException;
 public class GitUtils {
 
 
-    private static FileServiceImpl fileService = new FileServiceImpl();
 
+    private static FileServiceImpl fileService = new FileServiceImpl();
     private static String localPath;
     private static Git git;
     private static TaskListener listener;
+
+    public static TaskListener getListener() {
+        return listener;
+    }
+
+    public static void setListener(TaskListener listener) {
+        GitUtils.listener = listener;
+    }
+
     public static String cloneResposity(String gitURL, String gitBranch, String projectName, TaskListener tasklistener) {
         listener = tasklistener;
         try {
             //代码指定存储目录
             localPath = projectName;
-            System.out.println("============localPath==========" + localPath);
+            //System.out.println("============localPath==========" + localPath);
             FileRepository localRepo = new FileRepository(localPath + "/.git");
             git = new Git(localRepo);
             File localPathFile = new File(localPath);

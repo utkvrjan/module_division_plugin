@@ -8,6 +8,7 @@ import io.jenkins.plugins.sample.model.classBodyDeclaration.ConstructorDeclarati
 import io.jenkins.plugins.sample.model.classBodyDeclaration.MethodDeclaration;
 import io.jenkins.plugins.sample.model.classDeclaration.ClassDeclaration;
 import io.jenkins.plugins.sample.model.classDeclaration.CompilationUnit;
+import io.jenkins.plugins.sample.utils.GitUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -99,7 +100,11 @@ public class ExtractJavaVisitor extends JavaBaseVisitor {
     @Override
     public ClassDeclaration visitClassDeclaration(JavaParser.ClassDeclarationContext ctx) {
         ClassDeclaration classDeclaration = new ClassDeclaration();
-        classDeclaration.setClassName(ctx.Identifier().getText());
+        String className = ctx.Identifier().getText();
+        if(!(className.charAt(0)<='Z'&&className.charAt(0)>='A')) {
+            GitUtils.getListener().getLogger().println("文件"+compilationUnit.getFileName()+"的类名首字母没有大写");
+        }
+        classDeclaration.setClassName(className);
         for (ParseTree child : ctx.children) {
             if(child instanceof JavaParser.TypeParametersContext) {
                 JavaParser.TypeParametersContext context = (JavaParser.TypeParametersContext) child;
@@ -242,7 +247,11 @@ public class ExtractJavaVisitor extends JavaBaseVisitor {
         } else {
             method.setType(ctx.type().getText());
         }
-        method.setMethodName(ctx.Identifier().getText());
+        String methodName = ctx.Identifier().getText();
+        if(!(methodName.charAt(0)>='a'&&methodName.charAt(0)<='z')) {
+            GitUtils.getListener().getLogger().println("文件"+compilationUnit.getFileName()+"的方法名"+methodName+"首字母没有小写");
+        }
+        method.setMethodName(methodName);
         String formalParameter = ExtractJavaTool.textToString(ctx.formalParameters());
         method.setParameters(formalParameter);
         JavaParser.MethodBodyContext methodBodyContext = ctx.methodDeclarationRest().methodBody();
