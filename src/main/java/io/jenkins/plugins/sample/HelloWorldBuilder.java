@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
@@ -74,10 +75,12 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
 
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
-
-        listener.getLogger().println("接下来的模块划分操作，面向此项目展开：" + gitURL + "!");
+        /** 获取当前系统时间*/
+        long startTime = System.currentTimeMillis();
+        setClassNameDisable(classNameCheckList);
+        listener.getLogger().println("文件读取操作======接下来的模块划分操作，面向此项目展开：" + gitURL);
         if(!StringUtils.isBlank(classNameCheckList)) {
-            listener.getLogger().println("当前限制的类名有：" + classNameCheckList + "!");
+            listener.getLogger().println("文件读取操作======当前限制的类名有：" + classNameCheckList);
         }
         String res = GitUtils.cloneResposity(gitURL, gitBranch, projectName, listener);
         if(workspace.child("module_division.json").exists()) {
@@ -85,8 +88,22 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
         }
         workspace.createTempFile("module_division",".json");
         workspace.child("module_division.json").write(res,"UTF8");
-        listener.getLogger().println("模块划分成功，并把json数据放入workspace中");
+        /** 获取当前的系统时间，与初始时间相减就是程序运行的毫秒数，除以1000就是秒数*/
+        long endTime = System.currentTimeMillis();
+        double usedTime = (double)(endTime-startTime)/1000;
+        listener.getLogger().println("模块划分成功，并把json数据放入workspace中。总用时："+usedTime+"秒");
 
+    }
+
+    private void setClassNameDisable(String classNameCheckList) {
+        Set<String> set = new HashSet<>();
+        if(StringUtils.isNotBlank(classNameCheckList)) {
+            String[] names = classNameCheckList.split(",");
+            for (String name : names) {
+                set.add(name);
+            }
+        }
+        GitUtils.setClassNameDisable(set);
     }
 
     @Symbol("greet")

@@ -10,10 +10,6 @@
         <f:textbox />
     </f:entry>
     <f:advanced>
-        <f:entry title="${%French}" field="useFrench"
-                 description="${%FrenchDescr}">
-            <f:checkbox />
-        </f:entry>
         <f:entry title="${%CheckClassName}" field="classNameCheckList"
                  description="${%ClassNameDescr}">
             <f:textbox />

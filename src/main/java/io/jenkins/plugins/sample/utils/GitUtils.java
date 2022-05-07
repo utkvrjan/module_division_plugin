@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 public class GitUtils {
 
@@ -24,6 +25,15 @@ public class GitUtils {
     private static String localPath;
     private static Git git;
     private static TaskListener listener;
+    private static Set<String> classNameDisable;
+
+    public static Set<String> getClassNameDisable() {
+        return classNameDisable;
+    }
+
+    public static void setClassNameDisable(Set<String> classNameDisable) {
+        GitUtils.classNameDisable = classNameDisable;
+    }
 
     public static TaskListener getListener() {
         return listener;
@@ -60,8 +70,8 @@ public class GitUtils {
      * 如果没有该代码目录,执行git clone
      */
     private static String gitClone(String gitURL, String gitBranch, String localPath) throws Exception {
-        Git git = Git.cloneRepository().setURI(gitURL).setBranch(gitBranch).call();
-        listener.getLogger().println("git拿到了");
+        git = Git.cloneRepository().setURI(gitURL).setBranch(gitBranch).call();
+        listener.getLogger().println("文件读取操作======已经成功克隆项目代码");
         return fetchSrc();
     }
 
@@ -69,10 +79,7 @@ public class GitUtils {
      * 如果有代码,git pull
      */
     private static String gitPull(String branch) throws Exception {
-        listener.getLogger().println("正在从"+branch+"分支中拉取项目文件");
-        PullResult pullResult = git.pull().setRemoteBranchName(branch).call();
-        String fetchedFrom = pullResult.getFetchedFrom();
-        listener.getLogger().println("获取的表单："+fetchedFrom);
+        listener.getLogger().println("文件读取操作======项目已存在，正在从"+branch+"分支中拉取项目文件");git.pull().setRemoteBranchName(branch).call();
         return fetchSrc();
 
     }
@@ -80,7 +87,7 @@ public class GitUtils {
     private static String fetchSrc() throws IOException {
         Repository repository = git.getRepository();
         File directory =repository.getWorkTree();
-        listener.getLogger().println("directory拿到了");
+        listener.getLogger().println("文件读取操作======成功获取最新项目文件，准备进行模块划分");
         File[] files = directory.listFiles();
         for(File file : files) {
             if(file.getName().equals("src")) {
