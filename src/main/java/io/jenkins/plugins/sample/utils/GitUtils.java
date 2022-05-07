@@ -24,7 +24,7 @@ public class GitUtils {
     private static String localPath;
     private static Git git;
     private static TaskListener listener;
-    public static void cloneResposity(String gitURL, String gitBranch, String projectName, TaskListener tasklistener) {
+    public static String cloneResposity(String gitURL, String gitBranch, String projectName, TaskListener tasklistener) {
         listener = tasklistener;
         try {
             //代码指定存储目录
@@ -34,14 +34,15 @@ public class GitUtils {
             git = new Git(localRepo);
             File localPathFile = new File(localPath);
             if (!localPathFile.exists()) {
-                gitClone(gitURL, gitBranch, localPath);
+                return gitClone(gitURL, gitBranch, localPath);
             } else {
-                gitPull(gitBranch);
+                return gitPull(gitBranch);
             }
         } catch (Exception e) {
             listener.getLogger().println(e.getMessage());
             e.printStackTrace();
         }
+        return "";
     }
 
 
@@ -49,25 +50,25 @@ public class GitUtils {
     /**
      * 如果没有该代码目录,执行git clone
      */
-    private static void gitClone(String gitURL, String gitBranch, String localPath) throws Exception {
+    private static String gitClone(String gitURL, String gitBranch, String localPath) throws Exception {
         Git git = Git.cloneRepository().setURI(gitURL).setBranch(gitBranch).call();
         listener.getLogger().println("git拿到了");
-        fetchSrc();
+        return fetchSrc();
     }
 
     /**
      * 如果有代码,git pull
      */
-    private static void gitPull(String branch) throws Exception {
-        listener.getLogger().println("正在从"+branch+"分支中pull项目文件");
+    private static String gitPull(String branch) throws Exception {
+        listener.getLogger().println("正在从"+branch+"分支中拉取项目文件");
         PullResult pullResult = git.pull().setRemoteBranchName(branch).call();
         String fetchedFrom = pullResult.getFetchedFrom();
         listener.getLogger().println("获取的表单："+fetchedFrom);
-        fetchSrc();
+        return fetchSrc();
 
     }
 
-    private static void fetchSrc() throws IOException {
+    private static String fetchSrc() throws IOException {
         Repository repository = git.getRepository();
         File directory =repository.getWorkTree();
         listener.getLogger().println("directory拿到了");
@@ -76,11 +77,12 @@ public class GitUtils {
             if(file.getName().equals("src")) {
                 Folder res = fileService.traverseFolder(file);
                 String jsonString = JSONObject.toJSONString(res);
-                listener.getLogger().println("模块划分结果："+jsonString);
-                returnDir(file, 0); // 调用遍历方法
-                break;
+                //listener.getLogger().println("模块划分结果："+jsonString);
+                //returnDir(file, 0); // 调用遍历方法
+                return jsonString;
             }
         }
+        return "";
     }
 
 

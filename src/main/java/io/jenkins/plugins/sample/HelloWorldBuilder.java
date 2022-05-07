@@ -18,7 +18,10 @@ import org.kohsuke.stapler.QueryParameter;
 
 import javax.servlet.ServletException;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -76,7 +79,14 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
         if(!StringUtils.isBlank(classNameCheckList)) {
             listener.getLogger().println("当前限制的类名有：" + classNameCheckList + "!");
         }
-        GitUtils.cloneResposity(gitURL,gitBranch,projectName,listener);
+        String res = GitUtils.cloneResposity(gitURL, gitBranch, projectName, listener);
+        if(workspace.child("module_division.json").exists()) {
+            workspace.child("module_division.json").delete();
+        }
+        workspace.createTempFile("module_division",".json");
+        workspace.child("module_division.json").write(res,"UTF8");
+        listener.getLogger().println("模块划分成功，并把json数据放入workspace中");
+
     }
 
     @Symbol("greet")
