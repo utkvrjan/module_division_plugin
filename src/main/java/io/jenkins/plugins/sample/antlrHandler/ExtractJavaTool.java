@@ -29,7 +29,7 @@ public class ExtractJavaTool {
 //        ExtractJavaListener javaListener = new ExtractJavaListener(parser,javaFile);
 //        walker.walk(javaListener,tree);
 //        return javaListener.getJavaFile();
-        CompilationUnit compilationUnit = new CompilationUnit(file.getName());
+        CompilationUnit compilationUnit = new CompilationUnit(file.getName(),file.getAbsolutePath());
         ExtractJavaVisitor javaVisitor = new ExtractJavaVisitor(compilationUnit);
         javaVisitor.visit(tree);
         return javaVisitor.getCompilationUnit();

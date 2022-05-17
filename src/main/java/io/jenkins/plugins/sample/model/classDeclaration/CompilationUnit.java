@@ -26,7 +26,13 @@ public class CompilationUnit {
     @JSONField(name = "当前文件名称",ordinal = 1)
     private String fileName;
 
+    private transient String fileAbsolutePath;
+
     public CompilationUnit(String fileName) {
         this.fileName = fileName;
+    }
+    public CompilationUnit(String fileName,String fileAbsolutePath) {
+        this.fileName = fileName;
+        this.fileAbsolutePath = fileAbsolutePath;
     }
 }

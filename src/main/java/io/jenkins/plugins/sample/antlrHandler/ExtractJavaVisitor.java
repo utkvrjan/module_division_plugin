@@ -102,10 +102,10 @@ public class ExtractJavaVisitor extends JavaBaseVisitor {
         ClassDeclaration classDeclaration = new ClassDeclaration();
         String className = ctx.Identifier().getText();
         if(!(className.charAt(0)<='Z'&&className.charAt(0)>='A')) {
-            GitUtils.getListener().getLogger().println("辅助功能检查======文件"+compilationUnit.getFileName()+"的类名首字母没有大写");
+            GitUtils.getListener().getLogger().println("【模块划分操作】【辅助功能检查】文件"+compilationUnit.getFileAbsolutePath()+"的类名首字母没有大写");
         }
         if(GitUtils.getClassNameDisable().contains(className)) {
-            GitUtils.getListener().getLogger().println("辅助功能检查======文件"+compilationUnit.getFileName()+"的类名是被禁止使用的");
+            GitUtils.getListener().getLogger().println("【模块划分操作】【辅助功能检查】文件"+compilationUnit.getFileAbsolutePath()+"的类名是被禁止使用的");
         }
         classDeclaration.setClassName(className);
         for (ParseTree child : ctx.children) {
@@ -252,7 +252,7 @@ public class ExtractJavaVisitor extends JavaBaseVisitor {
         }
         String methodName = ctx.Identifier().getText();
         if(!(methodName.charAt(0)>='a'&&methodName.charAt(0)<='z')) {
-            GitUtils.getListener().getLogger().println("辅助功能检查======文件"+compilationUnit.getFileName()+"的方法名"+methodName+"首字母没有小写");
+            GitUtils.getListener().getLogger().println("【模块划分操作】【辅助功能检查】文件"+compilationUnit.getFileAbsolutePath()+"的方法名"+methodName+"首字母没有小写");
         }
         method.setMethodName(methodName);
         String formalParameter = ExtractJavaTool.textToString(ctx.formalParameters());

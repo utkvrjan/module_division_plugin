@@ -70,8 +70,11 @@ public class GitUtils {
      * 如果没有该代码目录,执行git clone
      */
     private static String gitClone(String gitURL, String gitBranch, String localPath) throws Exception {
+        long startTime = System.currentTimeMillis();
         git = Git.cloneRepository().setURI(gitURL).setBranch(gitBranch).call();
-        listener.getLogger().println("文件读取操作======已经成功克隆项目代码");
+        long endTime = System.currentTimeMillis();
+        double usedTime = (double)(endTime-startTime)/1000;
+        listener.getLogger().println("【文件读取操作】已经成功克隆项目代码，总用时："+usedTime+"秒");
         return fetchSrc();
     }
 
@@ -79,7 +82,12 @@ public class GitUtils {
      * 如果有代码,git pull
      */
     private static String gitPull(String branch) throws Exception {
-        listener.getLogger().println("文件读取操作======项目已存在，正在从"+branch+"分支中拉取项目文件");git.pull().setRemoteBranchName(branch).call();
+        listener.getLogger().println("【文件读取操作】项目已存在，正在从"+branch+"分支中拉取项目文件");
+        long startTime = System.currentTimeMillis();
+        git.pull().setRemoteBranchName(branch).call();
+        long endTime = System.currentTimeMillis();
+        double usedTime = (double)(endTime-startTime)/1000;
+        listener.getLogger().println("【文件读取操作】已经成功更新项目代码，总用时："+usedTime+"秒");
         return fetchSrc();
 
     }
@@ -87,18 +95,25 @@ public class GitUtils {
     private static String fetchSrc() throws IOException {
         Repository repository = git.getRepository();
         File directory =repository.getWorkTree();
-        listener.getLogger().println("文件读取操作======成功获取最新项目文件，准备进行模块划分");
+        listener.getLogger().println("【文件读取操作】成功获取最新项目文件，准备进行模块划分");
         File[] files = directory.listFiles();
-        for(File file : files) {
-            if(file.getName().equals("src")) {
-                Folder res = fileService.traverseFolder(file);
-                String jsonString = JSONObject.toJSONString(res);
-                //listener.getLogger().println("模块划分结果："+jsonString);
-                //returnDir(file, 0); // 调用遍历方法
-                return jsonString;
-            }
-        }
-        return "";
+//        for(File file : files) {
+//            if(file.getName().equals("src")) {
+//                Folder res = fileService.traverseFolder(file);
+//                String jsonString = JSONObject.toJSONString(res);
+//                //listener.getLogger().println("模块划分结果："+jsonString);
+//                //returnDir(file, 0); // 调用遍历方法
+//                return jsonString;
+//            }
+//        }
+        listener.getLogger().println("【模块划分操作】开始进行模块划分");
+        long startTime = System.currentTimeMillis();
+        Folder res = fileService.traverseFolder(directory);
+        String jsonString = JSONObject.toJSONString(res);
+        long endTime = System.currentTimeMillis();
+        double usedTime = (double)(endTime-startTime)/1000;
+        listener.getLogger().println("【模块划分操作】模块划分结束。总用时："+usedTime+"秒");
+        return jsonString;
     }
 
 

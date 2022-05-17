@@ -91,7 +91,7 @@ public class HelloWorldBuilder extends Builder implements SimpleBuildStep {
         /** 获取当前的系统时间，与初始时间相减就是程序运行的毫秒数，除以1000就是秒数*/
         long endTime = System.currentTimeMillis();
         double usedTime = (double)(endTime-startTime)/1000;
-        listener.getLogger().println("模块划分成功，并把json数据放入workspace中。总用时："+usedTime+"秒");
+        listener.getLogger().println("模块划分插件运行完毕，并把json数据放入workspace中。整体总用时："+usedTime+"秒");
 
     }
 
