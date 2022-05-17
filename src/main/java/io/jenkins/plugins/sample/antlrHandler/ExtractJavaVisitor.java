@@ -35,6 +35,7 @@ public class ExtractJavaVisitor extends JavaBaseVisitor {
     @Override
     public Object visitCompilationUnit(JavaParser.CompilationUnitContext ctx) {
         List<String> importList = new ArrayList<>();
+        if(ctx.children == null) return null;
         for (ParseTree child : ctx.children) {
             if(child instanceof JavaParser.PackageDeclarationContext) {
                 String str = ((JavaParser.PackageDeclarationContext) child).qualifiedName().getText();
@@ -68,7 +69,7 @@ public class ExtractJavaVisitor extends JavaBaseVisitor {
 
         //todo
         boolean isPublic = false;
-
+        if(ctx.children == null) return null;
         for (ParseTree child : ctx.children) {
             if(child instanceof JavaParser.ClassOrInterfaceModifierContext) {
                 JavaParser.ClassOrInterfaceModifierContext context = (JavaParser.ClassOrInterfaceModifierContext)child;
@@ -108,6 +109,7 @@ public class ExtractJavaVisitor extends JavaBaseVisitor {
             GitUtils.getListener().getLogger().println("【模块划分操作】【辅助功能检查】文件"+compilationUnit.getFileAbsolutePath()+"的类名是被禁止使用的");
         }
         classDeclaration.setClassName(className);
+        if(ctx.children == null) return null;
         for (ParseTree child : ctx.children) {
             if(child instanceof JavaParser.TypeParametersContext) {
                 JavaParser.TypeParametersContext context = (JavaParser.TypeParametersContext) child;
@@ -134,8 +136,11 @@ public class ExtractJavaVisitor extends JavaBaseVisitor {
     @Override
     public ClassBody visitClassBody(JavaParser.ClassBodyContext ctx) {
         ClassBody classBody = new ClassBody();
+        if(ctx.children == null) return classBody;
+        if(ctx.classBodyDeclaration() == null) return classBody;
         for (JavaParser.ClassBodyDeclarationContext classBodyDeclarationContext : ctx.classBodyDeclaration()) {
             String modifiers = new String();
+            if(classBodyDeclarationContext.children == null) return classBody;
             for (ParseTree child : classBodyDeclarationContext.children) {
                 if(child instanceof JavaParser.ModifiersContext) {
                     JavaParser.ModifiersContext context = (JavaParser.ModifiersContext) child;
@@ -169,6 +174,7 @@ public class ExtractJavaVisitor extends JavaBaseVisitor {
     @Override
     public ClassBodyMember visitMember(JavaParser.MemberContext ctx) {
         ClassBodyMember member;
+        if(ctx.children == null) return null;
         for (ParseTree child : ctx.children) {
             if(child instanceof JavaParser.GenericMethodDeclarationContext) {
                 JavaParser.GenericMethodDeclarationContext context = (JavaParser.GenericMethodDeclarationContext) child;
@@ -219,6 +225,7 @@ public class ExtractJavaVisitor extends JavaBaseVisitor {
     @Override
     public ClassBodyMember visitBlockStatement(JavaParser.BlockStatementContext ctx) {
         ClassBodyMember member;
+        if(ctx.children == null) return null;
         for (ParseTree child : ctx.children) {
             if(child instanceof JavaParser.ClassDeclarationContext) {
                 JavaParser.ClassDeclarationContext context = (JavaParser.ClassDeclarationContext) child;
